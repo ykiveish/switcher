@@ -1,0 +1,36 @@
+{
+    "application": {
+        "name": "Switcher",
+        "server": {
+            "address": {
+                "ip": "localhost",
+                "use_local_ip": true
+            },  
+            "web": {
+                "port": 8484
+            },
+            "web_socket": {
+                "port": 1984
+            },
+            "socket": {
+                "port": 10084
+            },
+            "broadcast": {
+                "port": 5007
+            }
+        },
+        "autolaunch": {
+            "type": "app",
+            "enabled": false
+        }
+    },
+    "terminal": {
+
+    },
+    "logger": {
+
+    },
+    "network": {
+        "iface": "{661BBD28-7062-4AB3-902F-03728D380938}"
+    }
+}
