@@ -1,4 +1,4 @@
-#include "NodeSerialDesc.h"
+#include "SerialProtocol.h"
 
 unsigned char uart_tx_buffer[MAX_LENGTH];
 unsigned char uart_rx_buffer[MAX_LENGTH];
@@ -21,9 +21,9 @@ void send_async_data_to_uart(uint16_t opcode, uint8_t* payload, uint16_t size) {
   uart_tx_header->direction       = ASYNC;
   uart_tx_header->op_code         = opcode;
   uart_tx_header->content_length  = size;
-  serial_tx_len                   = NODE_HEADER_SIZE + size;
+  serial_tx_len                   = node_header_t_SIZE + size;
 
-  memcpy(&uart_tx_buffer[NODE_HEADER_SIZE], payload, size);
+  memcpy(&uart_tx_buffer[node_header_t_SIZE], payload, size);
 
   uart_tx_buffer[serial_tx_len]     = 0xAD;
   uart_tx_buffer[serial_tx_len + 1] = 0xDE;
@@ -53,10 +53,8 @@ void handler_serial(commands_table_t* handler_table, uint8_t length) {
     serial_tx_len                   = NODE_HEADER_SIZE + handler_size;
     
     switch (uart_rx_header->op_code) {
-      case OPCODE_GET_CONFIG_REGISTER:
-      case OPCODE_SET_CONFIG_REGISTER:
-      case OPCODE_GET_BASIC_SENSOR_VALUE:
-      case OPCODE_SET_BASIC_SENSOR_VALUE:
+      case OPCODE_GET_DEVICE_TYPE:
+      case OPCODE_PAUSE_WITH_TIMEOUT:
         uart_tx_buffer[serial_tx_len]     = 0xAD;
         uart_tx_buffer[serial_tx_len + 1] = 0xDE;
         Serial.write(&uart_tx_buffer[0], serial_tx_len + 2);
@@ -103,9 +101,9 @@ void send_data_to_master(uint8_t opcode, uint8_t* payload, uint16_t size) {
   uart_tx_header->direction       = SYNC_RESPONSE;
   uart_tx_header->op_code         = opcode;
   uart_tx_header->content_length  = size;
-  serial_tx_len                   = NODE_HEADER_SIZE + size;
+  serial_tx_len                   = node_header_t_SIZE + size;
 
-  memcpy(&uart_tx_buffer[NODE_HEADER_SIZE], payload, size);
+  memcpy(&uart_tx_buffer[node_header_t_SIZE], payload, size);
 
   uart_tx_buffer[serial_tx_len]     = 0xAD;
   uart_tx_buffer[serial_tx_len + 1] = 0xDE;

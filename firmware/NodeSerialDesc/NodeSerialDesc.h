@@ -6,7 +6,6 @@
 #define MAX_LENGTH 									                  64
 #define MAX_COMMAND_TABLE_SIZE                        128
 #define NODE_HEADER_SIZE                              5
-#define SERIAL_COMMAND_TABLE_SIZE                     4
 
 #define OPCODE_GET_CONFIG_REGISTER                    11
 #define OPCODE_SET_CONFIG_REGISTER                    12
@@ -14,8 +13,9 @@
 #define OPCODE_SET_BASIC_SENSOR_VALUE                 14
 
 #define REGISTER_DEVICE_TYPE_ADDRESS                  100
-#define REGISTER_NODE_IO_READ                         101
-#define REGISTER_NODE_IO_WRITE                        102
+#define REGISTER_RELAY_VALUE_ADDRESS                  200
+#define REGISTER_RELAY_COUNT_ADDRESS                  201
+#define REGISTER_RELAY_FEEDBACK_ADDRESS               202
 
 #define SYNC_REQUEST                                  0x1
 #define SYNC_RESPONSE                                 0x2
@@ -29,16 +29,9 @@ typedef struct {
 } commands_table_t;
 
 typedef struct {
-  unsigned char   magic_number[2];
-  unsigned char   direction;
-  unsigned char   op_code;
-  unsigned char   content_length;
-} node_header_t;
-
-typedef struct {
-  uint8_t   address;
-  uint32_t  value;
-} node_register_t;
+  unsigned char type;
+  unsigned char payload_length;
+} node_info_header_t;
 
 typedef struct {
   unsigned char     type;
@@ -46,16 +39,11 @@ typedef struct {
 } node_sensor_t;
 
 typedef struct {
-  uint8_t     family;
-  uint16_t    type;
-  uint8_t     reserved;
-} node_device_type_t;
-
-typedef struct {
-  uint8_t   pin;
-  uint8_t   direction;
-  uint16_t  value;
-} node_io_t;
+  unsigned char   magic_number[2];
+  unsigned char   direction;
+  unsigned char   op_code;
+  unsigned char   content_length;
+} node_header_t;
 
 void blink(unsigned int interval);
 int read_serial_buffer();

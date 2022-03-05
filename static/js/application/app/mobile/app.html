@@ -1,21 +1,24 @@
 <div data-role="header" data-position="fixed">
-    <h1>Application</h1>
+    <h1>Switcher</h1>
     <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-back ui-btn-icon-left ui-btn-icon-notext">Back</a>
-    <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-gear">10:00</a>
+    <a href="#" id="id_application_time" class="ui-btn ui-corner-all ui-shadow ui-btn-icon-left ui-icon-gear">10:00</a>
 </div>
 <div class="ui-content" role="main">
-    
+    <div class="ui-grid-b" id="id_m_switches_view_list_table"></div>
+    <ul data-role="listview" data-split-icon="gear" data-inset="true" id="id_app_mobile_device_list"></ul>
 </div>
+<!--
 <div data-role="footer" data-position="fixed">
     <div data-role="navbar">
         <ul>
-            <li><a href="#" class="ui-btn-active ui-state-persist">Files</a></li>
-            <li><a href="#">Help</a></li>
+            <li><a href="#" class="ui-btn-active ui-state-persist">Sensors</a></li>
+            <li><a href="#">USB Devices</a></li>
             <li><a href="#">Settings</a></li>
         </ul>
     </div>
     <h4 style="display:none;">Footer</h4>
 </div>
+-->
 <div data-role="popup" id="purchase" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
     <h3>Purchase Album?</h3>
     <p>Your download will begin immediately on your mobile device when you purchase.</p>

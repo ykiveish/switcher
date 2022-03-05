@@ -13,6 +13,7 @@ function TemplateModuleView() {
     this.RelayCount                 = 0;
     this.RelayValue                 = 0;
     this.RelaySwitchTable           = null;
+    this.Resource                   = new AppResource();
 
     return this;
 }
@@ -55,6 +56,7 @@ TemplateModuleView.prototype.Build = function(data, callback) {
         if (self.HostingObject !== undefined && self.HostingObject != null) {
             self.HostingObject.innerHTML = self.HTML;
         }
+        
         self.PostBuild();
         // Call callback
         if (callback !== undefined && callback != null) {
@@ -76,13 +78,7 @@ TemplateModuleView.prototype.Show = function() {
 
 TemplateModuleView.prototype.SetRelayValue = function(id, index) {
     var self = this;
-    var obj = document.getElementById(id);
-
-    if (obj.checked) {
-        this.RelayValue |= (1 << index);
-    } else {
-        this.RelayValue &= ~(1 << index);
-    }
+    this.RelayValue = this.Resource.SetSwitch(this.RelayValue, id, index);
 
     app.Adaptor.SetRelayValue(this.RelayValue, function(data, error) {
         self.RelayValue = data.payload.value;
@@ -92,26 +88,10 @@ TemplateModuleView.prototype.SetRelayValue = function(id, index) {
 }
 
 TemplateModuleView.prototype.BuildSwitcheList = function() {
-    var html = "";
-    for (idx = 0; idx < this.RelayCount; idx++) {
-        state = ((this.RelayValue >> idx) & 0x1) ? "checked": "";
-
-        var item = `
-        <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between bg-light">
-                <div>
-                    <h6 class="my-0" style="color: #2A7D8D; cursor: pointer;" id="id_m_switch_name_`+idx+`" onclick="window.ApplicationModules.DashboardView.UpdateSwitchInfo_onclick(`+idx+`);">Switch</h6>
-                    <small class="text-muted">Brief description</small>
-                </div>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" onclick="window.ApplicationModules.DashboardView.SetRelayValue('id_m_switch_`+idx+`', `+idx+`);" `+state+` class="custom-control-input" id="id_m_switch_`+idx+`">
-                    <label class="custom-control-label" for="id_m_switch_`+idx+`"></label>
-                </div>
-            </li>
-        </ul> `;
-        html += item;
-    }
-    document.getElementById("id_m_switches_view_list_table").innerHTML = html;
+    this.Resource.BuildSwitches({
+        "count": this.RelayCount,
+        "list": this.RelayValue
+    });
 }
 
 TemplateModuleView.prototype.UpdateSwitchesInfo = function() {
@@ -128,17 +108,17 @@ TemplateModuleView.prototype.UpdateSwitchesInfo = function() {
 
 TemplateModuleView.prototype.UpdateSwitchInfo_onclick = function(idx) {
     var self = this;
-    var content = `
-        <div class="row">
-            <div class="col-xl-12" style="text-align: center">
-                <input type="text" class="form-control" id="id_m_template_view_update_switch_name" placeholder="`+document.getElementById("id_m_switch_name_"+idx).innerHTML+`">
-            </div>
-        </div>
-    `;
+    var value = document.getElementById("id_m_switch_name_"+idx).innerHTML;
+    var content = this.Resource.UpdateNameModal;
+    var confirm = this.Resource.UpdateNameModalConfirm;
+
+    content = content.split("[VALUE]").join(value);
+    confirm = confirm.split("[IDX]").join(idx);
+
     window.ApplicationModules.Modal.Remove();
     window.ApplicationModules.Modal.SetTitle("Update Name");
     window.ApplicationModules.Modal.SetContent(content);
-    window.ApplicationModules.Modal.SetFooter(`<button type="button" class="btn btn-success btn-sm" onclick="window.ApplicationModules.DashboardView.SetName_onclick('`+idx+`');">Save</button><button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>`);
+    window.ApplicationModules.Modal.SetFooter(confirm);
     window.ApplicationModules.Modal.Build("sm");
     window.ApplicationModules.Modal.Show();
 }

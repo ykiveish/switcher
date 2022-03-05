@@ -12,6 +12,7 @@ function Application() {
     this.EventMapper = {};
     this.Adaptor = new Pidaptor(this.API);
     this.Terminal = new Piterm(this.API);
+    window.ApplicationModules.Modal = new MksBasicModal("GLOBAL");
 
     return this;
 }
@@ -39,6 +40,7 @@ Application.prototype.Connect = function(ip, port, callback) {
         console.log("Connected to local websocket");
 
         // Module area
+        self.API.AppendModule("TemplateModuleView");
         self.API.GetModules();
 
         callback();
@@ -46,6 +48,10 @@ Application.prototype.Connect = function(ip, port, callback) {
 }
 Application.prototype.NodeLoaded = function () {
     console.log("Modules Loaded");
+    window.ApplicationModules.DashboardView = new TemplateModuleView();
+    window.ApplicationModules.DashboardView.SetHostingID("id_application_view_module");
+    window.ApplicationModules.DashboardView.SetObjectDOMName("window.ApplicationModules.TemplateModuleView");
+    window.ApplicationModules.DashboardView.Build(null, function(module) {});
 }
 Application.prototype.OnChangeEvent = function(packet) {
     var event = packet.payload.event;
