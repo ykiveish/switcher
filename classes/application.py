@@ -10,6 +10,7 @@ from core import co_udp_broadcast
 from core import co_beaconer
 from core import co_json_db
 from classes import hardware
+from core import co_logger
 
 class Application(co_application.ApplicationLayer):
 	def __init__(self):
@@ -59,7 +60,7 @@ class Application(co_application.ApplicationLayer):
 		self.RelayValue = 0
 		for item in self.DB.GetTable("switches"):
 			self.RelayValue |= item["value"] << item["idx"]
-		print(self.RelayValue)
+		
 		self.HW.SetConfigRegistor(self.HW.REGISTER_RELAY_VALUE_ADDRESS, self.RelayValue)
 	
 	def WebErrorEvent(self):
@@ -68,7 +69,7 @@ class Application(co_application.ApplicationLayer):
 			self.ErrorCallback()
 	
 	def UsersEventHandler(self, name, info):
-		print("(UsersEventHandler)# {0}".format(name))
+		co_logger.LOGGER.Log("(UsersEventHandler)# {0}".format(name), 1)
 	
 	def Worker(self):
 		self.Working = True
@@ -79,10 +80,10 @@ class Application(co_application.ApplicationLayer):
 			try:
 				time.sleep(5)
 			except Exception as e:
-				print("Worker Exception: {0}".format(e))
+				co_logger.LOGGER.Log("Worker Exception: {0}".format(e), 1)
 	
 	def EchoHandler(self, sock, packet):
-		print("EchoHandler {0}".format(packet))
+		co_logger.LOGGER.Log("EchoHandler {0}".format(packet), 1)
 		is_async = packet["payload"]["async"]
 		
 		if is_async is True:
@@ -91,7 +92,7 @@ class Application(co_application.ApplicationLayer):
 			return "Echo SYNC"
 	
 	def SetRelayValueHandler(self, sock, packet):
-		print("SetRelayValueHandler {0}".format(packet))
+		co_logger.LOGGER.Log("SetRelayValueHandler {0}".format(packet), 1)
 		value = packet["payload"]["value"]
 
 		if self.HW.Status is False:
@@ -115,7 +116,7 @@ class Application(co_application.ApplicationLayer):
 		return relay
 	
 	def GetRelayValueHandler(self, sock, packet):
-		print("GetRelayValueHandler {0}".format(packet))
+		co_logger.LOGGER.Log("GetRelayValueHandler {0}".format(packet), 1)
 
 		if self.HW.Status is False:
 			return {
@@ -125,7 +126,7 @@ class Application(co_application.ApplicationLayer):
 		return self.HW.GetConfigRegistor(self.HW.REGISTER_RELAY_VALUE_ADDRESS)
 	
 	def GetRelayFeedbackHandler(self, sock, packet):
-		print("GetRelayFeedbackHandler {0}".format(packet))
+		co_logger.LOGGER.Log("GetRelayFeedbackHandler {0}".format(packet), 1)
 
 		if self.HW.Status is False:
 			return {
@@ -135,7 +136,7 @@ class Application(co_application.ApplicationLayer):
 		return self.HW.GetConfigRegistor(self.HW.REGISTER_RELAY_FEEDBACK_ADDRESS)
 	
 	def GetRelayCountHandler(self, sock, packet):
-		print("GetRelayCountHandler {0}".format(packet))
+		co_logger.LOGGER.Log("GetRelayCountHandler {0}".format(packet), 1)
 
 		if self.HW.Status is False:
 			return {
@@ -145,7 +146,8 @@ class Application(co_application.ApplicationLayer):
 		return self.HW.GetConfigRegistor(self.HW.REGISTER_RELAY_COUNT_ADDRESS)
 	
 	def SetRelayNameHandler(self, sock, packet):
-		print("SetRelayNameHandler {0}".format(packet))
+		co_logger.LOGGER.Log("SetRelayNameHandler {0}".format(packet), 1)
+
 		idx = int(packet["payload"]["idx"])
 		name = packet["payload"]["name"]
 
@@ -157,7 +159,7 @@ class Application(co_application.ApplicationLayer):
 		}
 	
 	def GetRelayNameHandler(self, sock, packet):
-		print("GetRelayNameHandler {0}".format(packet))
+		co_logger.LOGGER.Log("GetRelayNameHandler {0}".format(packet), 1)
 
 		return {
 			"switches": self.DB.GetTable("switches")

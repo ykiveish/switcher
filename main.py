@@ -4,6 +4,9 @@ import argparse
 
 from classes import terminal
 from classes import application
+from core import co_logger
+
+co_logger.InitLogger("switcher")
 
 def signal_handler(signal, frame):
 	pass
